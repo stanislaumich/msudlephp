@@ -37,7 +37,7 @@
                                 <input type="number" name="section_order[]" class="form-control" placeholder="Порядок" value="<?php echo htmlspecialchars($s['order'] ?? ($i + 1)); ?>">
                             </div>
                             <div class="col-2">
-                                <button type="button" class="btn btn-outline-danger w-100 remove-section"><i class="bi bi-trash"></i></button>
+                                <button type="button" class="btn btn-outline-danger w-100 remove-section" data-bs-toggle="tooltip" title="Удалить раздел"><i class="bi bi-trash"></i></button>
                             </div>
                         </div>
                         <?php endforeach; ?>
@@ -55,7 +55,7 @@
                             row.className = 'row g-2 section-row mb-2';
                             row.innerHTML = '<div class="col-7"><input type="text" name="section_name[]" class="form-control" placeholder="Название раздела"></div>' +
                                 '<div class="col-3"><input type="number" name="section_order[]" class="form-control" placeholder="Порядок"></div>' +
-                                '<div class="col-2"><button type="button" class="btn btn-outline-danger w-100 remove-section"><i class="bi bi-trash"></i></button></div>';
+                                '<div class="col-2"><button type="button" class="btn btn-outline-danger w-100 remove-section" data-bs-toggle="tooltip" title="Удалить раздел"><i class="bi bi-trash"></i></button></div>';
                             list.appendChild(row);
                         }
 

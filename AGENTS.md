@@ -4,17 +4,17 @@
 
 ### Проверка синтаксиса PHP
 ```bash
-D:\OpenServer\modules\php\PHP_8.1\php.exe -l path/to/file.php
+D:\OpenServer\modules\php\PHP_7.4\php.exe -l path/to/file.php
 ```
 
 ### Запуск unit-тестов
 ```bash
-D:\OpenServer\modules\php\PHP_8.1\php.exe tmp_unit_tests.php
+D:\OpenServer\modules\php\PHP_7.4\php.exe tmp_unit_tests.php
 ```
 
 ### Локальный сервер (разработка)
 ```bash
-D:\OpenServer\modules\php\PHP_8.1\php.exe -S 127.0.0.1:9876 -t public
+D:\OpenServer\modules\php\PHP_7.4\php.exe -S 127.0.0.1:9876 -t public
 ```
 
 ## Структура проекта
