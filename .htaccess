@@ -1,0 +1,14 @@
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^ index.php [QSA,L]
+
+# Deny access to sensitive directories
+<FilesMatch "\.(env|ini|conf|sql|md|log)$">
+    Require all denied
+</FilesMatch>
+
+# Deny access to dotfiles
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>

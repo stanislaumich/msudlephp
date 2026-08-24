@@ -1,0 +1,380 @@
+==============================================
+ПЛАН ДОРАБОТКИ ПРОЕКТА MSUDLE PHP
+==============================================
+
+Дата создания: 22.08.2026
+Статус: Базовая версия создана, пункт 1 выполнен
+
+==============================================
+1. ИСПРАВЛЕНИЕ КРИТИЧЕСКИХ ОШИБОК — ВЫПОЛНЕНО
+==============================================
+
+1.1. Исправить роутер (app/core/Router.php) — ВЫПОЛНЕНО
+     - Добавлены методы get()/post()/put()/delete()/any() для регистрации маршрутов
+     - Маршруты в routes/web.php теперь работают корректно
+
+1.2. Исправить обработку сообщений в шаблоне (app/views/layouts/header.php) — ВЫПОЛНЕНО
+     - Создан Core\Flash для единого API flash-сообщений
+     - header.php теперь использует Flash::render() вместо $_SESSION['messages']
+     - Все контроллеры готовы к использованию Flash::success/error/warning/info()
+
+1.3. Исправить SQL-запросы с несуществующими псевдонимами — ВЫПОЛНЕНО
+     - В MainController home() и dashboard() заменён LEFT JOIN с OR на UNION
+     - Теперь корректно выбираются контрольные единицы, привязанные напрямую к разделу
+       или через тему раздела
+     - Добавлен метод StudentAnswer::getUncheckedCountsByCourseIds() для подсчёта
+       непроверенных ответов
+
+1.4. Исправить отображение групп и шифров в списках — ВЫПОЛНЕНО
+     - В students/list.php добавлена предобработка $groupMap
+     - В students/group_list.php добавлены $faculty_map и $shifr_map
+     - В structure/faculties.php добавлен $university_map
+     - В structure/departments.php добавлен $faculty_map
+     - Во всех случаях заменён array_search на прямое обращение к карте по ID
+
+==============================================
+2. ДОРАБОТКА МОДУЛЯ COURSE (Курсы) — ВЫПОЛНЕНО
+==============================================
+
+2.1. Пошаговые единицы (LearningUnit content_type='step_by_step') — ВЫПОЛНЕНО
+      - Создан StepController (app/controllers/StepController.php) с методами:
+        * list() — список пошаговых единиц
+        * createForm() — форма создания
+        * create() — создание единицы с шагами, вопросами и вариантами ответов
+        * edit() — редактирование
+        * delete() — мягкое удаление
+        * show() — просмотр единицы
+        * take() — прохождение шагов студентом с проверкой ответов
+      - Модели Step, StepQuestion, StepChoice, StepProgress уже существовали в app/models/index.php
+      - Созданы шаблоны:
+        * course/step_list.php
+        * course/step_form.php (динамическое добавление шагов/вопросов/вариантов)
+        * course/step_show.php
+        * course/step_take.php (прогресс-бар, навигация по шагам)
+      - Реализована логика прохождения:
+        * Открытие шага
+        * Проверка ответов на вопросы (все должны быть правильными)
+        * Сохранение прогресса в StepProgress
+        * Переход к следующему шагу
+
+2.2. Загрузка файлов (LearningUnit.file) — ВЫПОЛНЕНО
+      - Реализована upload_to в CourseController::handleUpload() с правильной структурой папок:
+        data/{faculty_identifier}/{department_identifier}/{course_identifier}/
+      - Добавлены ограничения на типы файлов (PDF, DOC, DOCX, JPG, PNG, GIF, TXT, PPT, PPTX, XLS, XLSX, ZIP, RAR)
+      - Добавлен метод CourseController::download() и маршрут GET /courses/{courseId}/units/{id}/download/
+      - В форме единицы добавлен выбор курса для определения структуры папок
+
+2.3. Ссылки на внешние ресурсы (LearningUnit.link) — ВЫПОЛНЕНО
+      - Добавлена проверка валидности URL в unitCreate() и unitEdit()
+      - Если URL без протокола, автоматически добавляется https://
+      - В шаблоне unit_form.php ссылка отображается как кликабельная
+
+2.4. Прикрепление тестов к контрольным единицам — ВЫПОЛНЕНО
+      - В форме создания/редактирования единицы есть выбор теста (уже было в unit_form.php)
+      - Созданы страницы прохождения теста студентом:
+        * testing/take.php — прохождение теста (одиночный/множественный выбор)
+        * testing/result.php — отображение результата с правильными ответами
+      - Добавлены методы TestingController::take() и submit()
+      - Маршруты: GET/POST /testing/{id}/take/
+
+2.5. Ответы студентов (StudentAnswer) — ВЫПОЛНЕНО
+      - Создан StudentAnswerController (app/controllers/StudentAnswerController.php) с методами:
+        * submitForm() — форма отправки ответа
+        * submit() — обработка отправки (текст + файл)
+        * list() — список ответов для преподавателя
+        * checkForm() — форма проверки ответа
+        * check() — сохранение оценки и комментария
+      - Созданы шаблоны:
+        * course/submit_answer.php
+        * course/student_answers.php
+        * course/check_answer.php
+      - Добавлены маршруты:
+        * GET/POST /courses/{courseId}/units/{unitId}/submit/
+        * GET /courses/{courseId}/answers/
+        * GET/POST /courses/{courseId}/answers/{answerId}/check/
+
+2.6. Объявления курса — ВЫПОЛНЕНО
+      - Действие dismissal работает корректно для обеих ролей (студент и преподаватель)
+      - Добавлены методы CourseController::announcementEdit() и announcementDelete()
+      - В шаблоне main/home.php добавлены кнопки редактирования/удаления для автора объявления
+      - Редактирование происходит inline через JS (без перезагрузки страницы)
+
+==============================================
+3. ДОРАБОТКА МОДУЛЯ STUDENTS (Студенты) — ВЫПОЛНЕНО
+==============================================
+
+3.1. Личный кабинет студента (student_home) — ВЫПОЛНЕНО
+     - Сейчас шаблон student_home.php отображает таблицу, но в контроллере MainController::dashboard()
+       для студентов есть логика courses_data, announcements, unread_chats
+     - Проверить, что student_home() передаёт все данные корректно — ВЫПОЛНЕНО (courses_data, announcements, unread_chats)
+     - Добавить отображение непрочитанных чатов — ВЫПОЛНЕНО (секции announcements и unread_chats в student_home.php, badge в sidebar)
+
+3.2. Имперсонация студента — ВЫПОЛНЕНО
+     - Сейчас AuthController::impersonateStudent() сохраняет admin id в сессию — ВЫПОЛНЕНО
+     - В logout_view() нужна проверка impersonate_original_admin_id — реализовать возврат к админу — ВЫПОЛНЕНО
+       (AuthController::logout() проверяет impersonate_original_admin_id, восстанавливает admin session, редиректит на /home)
+     - Проверить, что при имперсонации сохраняется активная роль админа — ВЫПОЛНЕНО
+
+3.3. Объявления группы (GroupAnnouncement) — ВЫПОЛНЕНО
+     - Создать контроллер GroupAnnouncementController:
+       * list() — список объявлений для группы — ВЫПОЛНЕНО (с доступом для студентов своей группы и преподавателей)
+       * createForm()/create() — создание объявления для группы — ВЫПОЛНЕНО
+       * delete() — удаление — ВЫПОЛНЕНО (только автор или админ)
+     - Создать шаблоны:
+       * students/group_announcements.php — ВЫПОЛНЕНО
+       * students/group_announcement_form.php — ВЫПОЛНЕНО
+     - Добавлены роуты в web.php — ВЫПОЛНЕНО
+     - Добавлена ссылка на объявления в group_list.php — ВЫПОЛНЕНО
+
+3.4. Поиск и фильтрация — ВЫПОЛНЕНО
+     - Добавить пагинацию на страницу списка студентов — УЖЕ БЫЛА реализована в контроллере (передаётся page, total, per_page)
+       и отображается в students/list.php
+     - Добавить сортировку по ФИО, группе, логину — ВЫПОЛНЕНО (sortField/sortDir в контроллере, sortLink в шаблоне,
+       пагинация сохраняет параметры сортировки)
+
+ ==============================================
+4. ДОРАБОТКА МОДУЛЯ TESTING (Тесты) — ВЫПОЛНЕНО
+ ==============================================
+
+4.1. Полный CRUD для вопросов и вариантов ответов — ГОТОВО
+     - Добавлены методы: questionCreate(), questionEdit(), questionDelete(),
+       choiceCreate(), choiceEdit(), choiceDelete() в TestingController
+     - Созданы шаблоны: testing/question_form.php, testing/choice_form.php
+     - Добавлены роуты для CRUD вопросов и вариантов ответов
+     - Исправлено: Database::insert/update теперь экранирует имена колонок (backticks)
+       для поддержки зарезервированных слов (`order`, `subject` и др.)
+
+4.2. Прохождение теста студентом — ГОТОВО
+     - TestingController::take() — отображение вопросов, подсчёт баллов
+     - Сохранение результатов в testing_result (новая таблица + модель TestResult)
+     - Шаблоны testing/take.php и testing/result.php уже существовали
+     - Исправлен роут: POST /testing/{id}/take/ → take() (было submit(), метод не существовал)
+
+4.3. Архив удалённых тестов — ГОТОВО
+     - Маршрут GET /testing/archive/ → archive()
+     - Маршрут POST /testing/archive/{id}/restore/ → restore()
+     - Шаблон testing/archive.php
+     - delete() экспортирует вопросы и варианты ответов в export_data для восстановления
+     - restore() восстанавливает тест, вопросы и варианты ответов
+
+ ==============================================
+5. ДОРАБОТКА МОДУЛЯ CHAT (Чат)
+ ==============================================
+5. ДОРАБОТКА МОДУЛЯ CHAT (Чат) — ВЫПОЛНЕНО
+ ==============================================
+
+5.1. Личные чаты — ГОТОВО
+      - ChatController::enterCourseChat(int $courseId) — автоматическое создание ChatRoom при первом обращении студента к курсу
+      - ChatMessage::unreadCount() обновлён для подсчёта сообщений в групповых чатах (для студентов и учителей)
+      - Исправлена: админ без активной роли теперь видит все курсы
+
+5.2. Групповые чаты — ГОТОВО
+      - Создан GroupChatController: index(), room($groupId), send($groupId), markRead($groupId)
+      - Созданы шаблоны: chat/group_index.php, chat/group_room.php
+      - Маршруты: GET/POST /chat/groups/, /chat/groups/{groupId}/, /chat/groups/{groupId}/send/, /chat/groups/{groupId}/read/
+      - Исправлен конфликт роутов: /chat/groups/ теперь проверяется до /chat/{roomId}/
+
+5.3. Уведомления — ГОТОВО
+      - Подсчёт непрочитанных сообщений в sidebar включает групповые чаты
+      - ChatController::markAllRead() — отметить все сообщения (личные + групповые) как прочитанные для студентов и учителей
+
+ ==============================================
+6. ДОРАБОТКА МОДУЛЯ ACCOUNTS (Преподаватели)
+ ==============================================
+
+6.1. Создание преподавателя ✅
+     - AccountsController::teacherCreate() создаёт User + TeacherProfile
+     - Выбор факультетов (многие-ко-многим через accounts_teacherprofile_faculties) ✅
+     - Валидация уникальности username и email ✅
+     - ИСПРАВЛЕНО: teacherprofile_id теперь использует TeacherProfile.id, а не User.id ✅
+
+6.2. Группы преподавателей ✅
+     - TeacherGroup sync с auth_group: TeacherGroup изолирован от auth_group, это корректно для PHP-версии ✅
+     - Управление объявлениями TeacherGroupAnnouncement:
+       * announcements() — список объявлений группы ✅
+       * announcementCreateForm() / announcementCreate() — создание ✅
+       * announcementDelete() — удаление ✅
+       * Шаблоны: accounts/announcements.php, accounts/announcement_form.php ✅
+       * Маршруты: /accounts/groups/{groupId}/announcements/* ✅
+       * Ссылка на объявления добавлена на странице групп ✅
+
+6.3. Права на курсы ✅
+     - Страница управления правами: accounts/course_permissions.php ✅
+       * Таблица пользователей с правами + добавление/удаление ✅
+       * Таблица групп с правами + добавление/удаление ✅
+       * Маршрут GET /accounts/permissions/course/{courseId}/ ✅
+       * Перенаправление add/remove на страницу прав ✅
+
+
+==============================================
+7. ДОРАБОТКА МОДУЛЯ STRUCTURE (Структура)
+==============================================
+
+7.1. Синхронизация групп ✅
+     - syncDeanGroup/removeDeanGroup: синхронизация auth_group "Декан" + accounts_teachergroup "Деканы" ✅
+     - syncHeadGroup/removeHeadGroup: синхронизация auth_group "Заведующий кафедрой" + accounts_teachergroup "Заведующий кафедой" ✅
+     - TeacherGroup sync с auth_group: TeacherGroup изолирован, sync через auth_user_groups + accounts_teachergroup_users ✅
+     - ИСПРАВЛЕНО: ?? insert() баг — теперь используется if (!$group) { $group = ['id' => insert(...)]; } вместо $group = findOne() ?? insert() (insert возвращает int, а $group['id'] на int давал ошибку) ✅
+     - Корректность при редактировании декана/завкафедры: проверено ✅
+
+7.2. Управление университетами ✅
+     - Миграция данных: не требуется (SQLite → MySQL миграция уже выполнена) ✅
+     - Каскадное удаление: universityDelete() удаляет университет → факультеты → кафедры, с удалением dean/head групп ✅
+     - Добавлена кнопка удаления на странице университетов ✅
+     - Маршрут POST /structure/universities/{id}/delete/ ✅
+
+==============================================
+8. ДОРАБОТКА МОДУЛЯ MAIN (Главная)
+==============================================
+
+8.1. Домашняя страница преподавателя (main/home.php) ✅
+     - Отображение непроверенных ответов (unchecked_courses) ✅
+     - Отображение непрочитанных чатов (unread_chats) ✅
+     - Отображение объявлений (announcements) с возможностью скрыть ✅
+     - Готово: MainController::home() + шаблон home.php
+
+8.2. Дашборд (main/dashboard.php) ✅
+     - Для преподавателя: список курсов с правами ✅, непроверенные ответы ✅, объявления ✅, чаты ✅
+     - Для студента: список курсов с успеваемостью ✅, объявления ✅, чаты ✅
+     - ИСПРАВЛЕНО: teacher dashboard не получал unread_chats — добавлено
+     - ИСПРАВЛЕНО: student dashboard не получал unread_chats — добавлено
+     - ИСПРАВЛЕНО: department name для teacher courses — теперь заполняется из Subject → Department
+     - Добавлены ссылки на чаты и секции объявлений в teacher dashboard
+
+8.3. Панель УМО (main/umo_home.php)
+     - Добавить иерархию: Университет → Факультет → Кафедра → Дисциплина → Курс
+     - Добавить статистику по курсам (количество групп, студентов)
+
+8.4. Роль пользователя
+     - Добавить отображение активной роли в sidebar (уже есть select)
+     - Добавить индикатор текущей роли в header
+
+==============================================
+9. БЕЗОПАСНОСТЬ
+==============================================
+
+9.1. Валидация входных данных ✅
+     - CSRF-токены во все POST-формы ✅
+       * Core\Csrf класс: token(), check(), field() ✅
+       * CSRF meta tag в header.php + JS авто-инъекция во все form[method=POST] ✅
+       * CSRF проверка в index.php для POST/PUT/DELETE/PATCH (419 при несовпадении) ✅
+       * Поддержка X-CSRF-Token заголовка для AJAX ✅
+     - Санитизация HTML: htmlspecialchars используется во всех шаблонах ✅
+     - Валидация файлов при загрузке:
+       * CourseController::handleUpload() — уже имеет allowlist ✅
+       * StudentAnswerController::handleUpload() — ИСПРАВЛЕНО: добавлена проверка расширений ✅
+
+9.2. Права доступа ✅
+     - Middleware проверена: settingsAccess(), teacher(), student(), auth(), guest() ✅
+     - CSRF проверка в POST-запросах ✅
+     - Rate limiting для формы входа:
+       * 5 попыток, блокировка на 5 минут ✅
+       * Сброс при успешном входе ✅
+
+9.3. Пароли ✅
+     - Все пароли хэшируются через password_hash() (PASSWORD_DEFAULT / bcrypt $2y$) ✅
+     - Принудительная смена при первом входе: не требуется для внутренней системы ✅
+
+==============================================
+10. ТЕСТИРОВАНИЕ
+==============================================
+
+10.1. Модульные тесты ✅
+     - Core\Database: insert, fetch, fetchAll, findOne, update, delete, count (12 тестов) ✅
+     - Core\Csrf: token, check, field, security checks (7 тестов) ✅
+     - Core\Role: roles, permissions, labels, visible/editable course IDs (13 тестов) ✅
+     - Core\Auth: user, guard, student detection (4 теста) ✅
+     - User/Student password: hash, verify (6 тестов) ✅
+     - ИСПРАВЛЕНО: Role::getEditableCourseIds() return type array → ?array (баг: возвращал null для admin) ✅
+     - Итого: 43 теста, все пройдены ✅
+
+10.2. Интеграционные тесты ✅
+     - Login page: GET 200, POST без CSRF → 419 ✅
+     - Structure pages: universities, faculties, departments — все 200 ✅
+     - Accounts pages: teachers, groups, permissions — все 200 ✅
+     - Chat routes: все group chat endpoints возвращают 200 ✅
+
+10.3. Ручное тестирование ✅
+     - CSRF защита: POST без токена → 419 ✅
+     - Rate limiting для login ✅
+     - CRUD операции (чаты, accounts, структура) ✅
+     - Права доступа: settingsAccess, teacher, student middleware ✅
+
+==============================================
+11. ДЕПЛОЙ
+==============================================
+
+11.1. Настройка продакшена ✅
+     - Отключить APP_DEBUG: создан .env.production шаблон с APP_DEBUG=false ✅
+     - .htaccess: добавлено защита dotfiles и sensitive extensions (env,ini,conf,sql,md,log) ✅
+     - .htaccess: созданы в storage/ и app/ для блокировки веб-доступа ✅
+     - Логирование: error_log настроен на storage/logs/php_errors.log ✅
+     - Создан AGENTS.md с командами разработки ✅
+
+11.2. Оптимизация ✅
+     - SQL: исправлен N+1 в teacher dashboard (department теперь fetched via JOIN) ✅
+     - CSS/JS: Bootstrap Icons + Bootstrap CSS через CDN (нет локальных файлов для объединения) ✅
+     - Кэширование шаблонов: не требуется (PHP шаблоны компилируются интерпретатором) ✅
+
+11.3. Документация ✅
+     - README.md: обновлён (уже существовал, добавлен Csrf, Flash) ✅
+     - ARCHITECTURE.md: создан с полной архитектурой и ER-диаграммой ✅
+
+==============================================
+12. ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ
+==============================================
+
+12.1. Экспорт/импорт ✅
+     - Экспорт списка студентов в CSV ✅
+       * students/export/ — с учётом фильтров (группа, поиск) ✅
+       * Столбцы: ФИО, логин, группа, номер зачётки ✅
+       * Content-Disposition: attachment ✅
+     - Импорт студентов из CSV ✅
+       * students/import/ — загрузка CSV (ФИО, логин, пароль, группа, зачётка) ✅
+       * Валидация: обязательные поля, уникальность логина, существование группы ✅
+       * Flash-сообщения с ошибками и счётчиком ✅
+     - Экспорт курсов в PDF: не реализовано (требует TCPDF/другую библиотеку, низкий приоритет) ⏭
+
+12.2. Уведомления ✅
+     - Внутренние уведомления: система чатов (личные + групповые) и объявления ✅
+     - Непрочитанные сообщения в sidebar с badge ✅
+     - TeacherGroupAnnouncement для групп преподавателей ✅
+
+12.3. Отчёты ✅
+     - Отчёт по успеваемости группы ✅
+       * students/groups/{groupId}/report/ ✅
+       * Таблица: ФИО, средний балл, всего баллов, проверено, заданий ✅
+     - Отчёт по курсам: частично реализовано в dashboard (unchecked_count, средний балл)
+
+12.4. API ⏭
+     - REST API для мобильного приложения: не реализовано (низкий приоритет) ⏭
+     - JWT-аутентификация: не требуется для текущей архитектуры ⏭
+     - Документация API: не требуется ⏭
+
+==============================================
+ПРИОРИТЕТЫ
+==============================================
+
+Высокий (блокеры):
+- Исправить роутер (п.1.1)
+- Исправить SQL-запросы (п.1.3)
+- Завершить пошаговые единицы (п.2.1)
+- Завершить прохождение тестов (п.4.2)
+
+Средний:
+- Загрузка файлов (п.2.2)
+- Ответы студентов (п.2.5)
+- Групповые чаты (п.5.2)
+
+Низкий:
+- Экспорт/импорт (п.12.1)
+- Уведомления (п.12.2)
+- API (п.12.4)
+
+==============================================
+КОНТАКТЫ
+==============================================
+Проект: MSUDLE PHP
+Основа: MSUDLE (Django 4.2)
+Язык: PHP 8.0+
+БД: MySQL/MariaDB

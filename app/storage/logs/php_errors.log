@@ -1,0 +1,111 @@
+[24-Aug-2026 15:36:54 Europe/Moscow] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000] [1049] Unknown database 'msudle' in C:\OSPanel\domains\msudle\app\core\Database.php:17
+Stack trace:
+#0 C:\OSPanel\domains\msudle\app\core\Database.php(17): PDO->__construct()
+#1 C:\OSPanel\domains\msudle\app\core\Database.php(27): Core\Database::getConnection()
+#2 C:\OSPanel\domains\msudle\app\core\Database.php(39): Core\Database::query()
+#3 C:\OSPanel\domains\msudle\app\models\Model.php(31): Core\Database::fetch()
+#4 C:\OSPanel\domains\msudle\app\models\index.php(51): Models\Model::findOne()
+#5 C:\OSPanel\domains\msudle\app\controllers\AuthController.php(50): Models\Student::findByLogin()
+#6 [internal function]: Controllers\AuthController->login()
+#7 C:\OSPanel\domains\msudle\app\core\Router.php(66): call_user_func_array()
+#8 C:\OSPanel\domains\msudle\app\routes\web.php(234): Core\Router->dispatch()
+#9 C:\OSPanel\domains\msudle\public\index.php(82): require_once('C:\\OSPanel\\doma...')
+#10 C:\OSPanel\domains\msudle\index.php(2): require_once('C:\\OSPanel\\doma...')
+#11  in C:\OSPanel\domains\msudle\app\core\Database.php on line 17
+[24-Aug-2026 16:02:19 Europe/Moscow] PHP Fatal error:  Uncaught PDOException: SQLSTATE[HY000]: General error: 1366 Incorrect string value: '\xD4\xE0\xEA\xF3\xEB\xFC...' for column 'full_name' at row 1 in C:\OSPanel\domains\msudle\app\core\Database.php:28
+Stack trace:
+#0 C:\OSPanel\domains\msudle\app\core\Database.php(28): PDOStatement->execute()
+#1 C:\OSPanel\domains\msudle\app\core\Database.php(54): Core\Database::query()
+#2 C:\OSPanel\domains\msudle\app\controllers\StudentsController.php(833): Core\Database::insert()
+#3 [internal function]: Controllers\StudentsController->importBatch()
+#4 C:\OSPanel\domains\msudle\app\core\Router.php(66): call_user_func_array()
+#5 C:\OSPanel\domains\msudle\app\routes\web.php(236): Core\Router->dispatch()
+#6 C:\OSPanel\domains\msudle\public\index.php(82): require_once('C:\\OSPanel\\doma...')
+#7 C:\OSPanel\domains\msudle\index.php(2): require_once('C:\\OSPanel\\doma...')
+#8 {main}
+  thrown in C:\OSPanel\domains\msudle\app\core\Database.php on line 28
+[24-Aug-2026 16:26:27 Europe/Moscow] PHP Fatal error:  Uncaught Error: Class 'Controllers\CourseTypeSection' not found in C:\OSPanel\domains\msudle\app\controllers\CourseController.php:315
+Stack trace:
+#0 C:\OSPanel\domains\msudle\app\controllers\CourseController.php(117): Controllers\CourseController->createDefaultSections()
+#1 [internal function]: Controllers\CourseController->create()
+#2 C:\OSPanel\domains\msudle\app\core\Router.php(66): call_user_func_array()
+#3 C:\OSPanel\domains\msudle\app\routes\web.php(236): Core\Router->dispatch()
+#4 C:\OSPanel\domains\msudle\public\index.php(82): require_once('C:\\OSPanel\\doma...')
+#5 C:\OSPanel\domains\msudle\index.php(2): require_once('C:\\OSPanel\\doma...')
+#6 {main}
+  thrown in C:\OSPanel\domains\msudle\app\controllers\CourseController.php on line 315
+[24-Aug-2026 16:28:07 Europe/Moscow] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'СТиАОС2026' for key 'course_course.identifier' in C:\OSPanel\domains\msudle\app\core\Database.php:28
+Stack trace:
+#0 C:\OSPanel\domains\msudle\app\core\Database.php(28): PDOStatement->execute()
+#1 C:\OSPanel\domains\msudle\app\core\Database.php(54): Core\Database::query()
+#2 C:\OSPanel\domains\msudle\app\models\Model.php(42): Core\Database::insert()
+#3 C:\OSPanel\domains\msudle\app\controllers\CourseController.php(110): Models\Model::create()
+#4 [internal function]: Controllers\CourseController->create()
+#5 C:\OSPanel\domains\msudle\app\core\Router.php(66): call_user_func_array()
+#6 C:\OSPanel\domains\msudle\app\routes\web.php(236): Core\Router->dispatch()
+#7 C:\OSPanel\domains\msudle\public\index.php(82): require_once('C:\\OSPanel\\doma...')
+#8 C:\OSPanel\domains\msudle\index.php(2): require_once('C:\\OSPanel\\doma...')
+#9 {main}
+  thrown in C:\OSPanel\domains\msudle\app\core\Database.php on line 28
+[24-Aug-2026 16:28:11 Europe/Moscow] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'СТиАОС2026' for key 'course_course.identifier' in C:\OSPanel\domains\msudle\app\core\Database.php:28
+Stack trace:
+#0 C:\OSPanel\domains\msudle\app\core\Database.php(28): PDOStatement->execute()
+#1 C:\OSPanel\domains\msudle\app\core\Database.php(54): Core\Database::query()
+#2 C:\OSPanel\domains\msudle\app\models\Model.php(42): Core\Database::insert()
+#3 C:\OSPanel\domains\msudle\app\controllers\CourseController.php(110): Models\Model::create()
+#4 [internal function]: Controllers\CourseController->create()
+#5 C:\OSPanel\domains\msudle\app\core\Router.php(66): call_user_func_array()
+#6 C:\OSPanel\domains\msudle\app\routes\web.php(236): Core\Router->dispatch()
+#7 C:\OSPanel\domains\msudle\public\index.php(82): require_once('C:\\OSPanel\\doma...')
+#8 C:\OSPanel\domains\msudle\index.php(2): require_once('C:\\OSPanel\\doma...')
+#9 {main}
+  thrown in C:\OSPanel\domains\msudle\app\core\Database.php on line 28
+[24-Aug-2026 16:30:15 Europe/Moscow] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'order``) VALUES (?, ?, ?)' at line 1 in C:\OSPanel\domains\msudle\app\core\Database.php:27
+Stack trace:
+#0 C:\OSPanel\domains\msudle\app\core\Database.php(27): PDO->prepare()
+#1 C:\OSPanel\domains\msudle\app\core\Database.php(54): Core\Database::query()
+#2 C:\OSPanel\domains\msudle\app\models\Model.php(42): Core\Database::insert()
+#3 C:\OSPanel\domains\msudle\app\controllers\CourseController.php(336): Models\Model::create()
+#4 C:\OSPanel\domains\msudle\app\controllers\CourseController.php(133): Controllers\CourseController->createDefaultSections()
+#5 [internal function]: Controllers\CourseController->create()
+#6 C:\OSPanel\domains\msudle\app\core\Router.php(66): call_user_func_array()
+#7 C:\OSPanel\domains\msudle\app\routes\web.php(236): Core\Router->dispatch()
+#8 C:\OSPanel\domains\msudle\public\in in C:\OSPanel\domains\msudle\app\core\Database.php on line 27
+[24-Aug-2026 16:45:45 Europe/Moscow] PHP Fatal error:  Uncaught PDOException: SQLSTATE[42000]: Syntax error or access violation: 1064 You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'order`` = ? WHERE id = ?' at line 1 in C:\OSPanel\domains\msudle\app\core\Database.php:27
+Stack trace:
+#0 C:\OSPanel\domains\msudle\app\core\Database.php(27): PDO->prepare()
+#1 C:\OSPanel\domains\msudle\app\core\Database.php(65): Core\Database::query()
+#2 C:\OSPanel\domains\msudle\app\models\Model.php(47): Core\Database::update()
+#3 C:\OSPanel\domains\msudle\app\controllers\CourseTypeController.php(146): Models\Model::updateWhere()
+#4 [internal function]: Controllers\CourseTypeController->edit()
+#5 C:\OSPanel\domains\msudle\app\core\Router.php(66): call_user_func_array()
+#6 C:\OSPanel\domains\msudle\app\routes\web.php(244): Core\Router->dispatch()
+#7 C:\OSPanel\domains\msudle\public\index.php(82): require_once('C:\\OSPanel\\doma...')
+#8 C:\OSPanel\domains\msudle\index.php(2): require_once('C:\\OSPan in C:\OSPanel\domains\msudle\app\core\Database.php on line 27
+[24-Aug-2026 16:47:12 Europe/Moscow] PHP Notice:  Undefined index: order in C:\OSPanel\domains\msudle\app\controllers\CourseTypeController.php on line 192
+[24-Aug-2026 16:47:12 Europe/Moscow] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'order' cannot be null in C:\OSPanel\domains\msudle\app\core\Database.php:28
+Stack trace:
+#0 C:\OSPanel\domains\msudle\app\core\Database.php(28): PDOStatement->execute()
+#1 C:\OSPanel\domains\msudle\app\core\Database.php(54): Core\Database::query()
+#2 C:\OSPanel\domains\msudle\app\models\Model.php(42): Core\Database::insert()
+#3 C:\OSPanel\domains\msudle\app\controllers\CourseTypeController.php(192): Models\Model::create()
+#4 C:\OSPanel\domains\msudle\app\controllers\CourseTypeController.php(148): Controllers\CourseTypeController->syncSections()
+#5 [internal function]: Controllers\CourseTypeController->edit()
+#6 C:\OSPanel\domains\msudle\app\core\Router.php(66): call_user_func_array()
+#7 C:\OSPanel\domains\msudle\app\routes\web.php(244): Core\Router->dispatch()
+#8 C:\OSPanel\domains\msudle\public\index.php(82): require_once('C:\\OSPanel\\doma...')
+#9 C:\OSPanel\domains\msudle\index.php(2): require_once('C:\\OSPanel\\doma...')
+ in C:\OSPanel\domains\msudle\app\core\Database.php on line 28
+[24-Aug-2026 16:47:49 Europe/Moscow] PHP Notice:  Undefined index: order in C:\OSPanel\domains\msudle\app\controllers\CourseTypeController.php on line 192
+[24-Aug-2026 16:47:49 Europe/Moscow] PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1048 Column 'order' cannot be null in C:\OSPanel\domains\msudle\app\core\Database.php:28
+Stack trace:
+#0 C:\OSPanel\domains\msudle\app\core\Database.php(28): PDOStatement->execute()
+#1 C:\OSPanel\domains\msudle\app\core\Database.php(54): Core\Database::query()
+#2 C:\OSPanel\domains\msudle\app\models\Model.php(42): Core\Database::insert()
+#3 C:\OSPanel\domains\msudle\app\controllers\CourseTypeController.php(192): Models\Model::create()
+#4 C:\OSPanel\domains\msudle\app\controllers\CourseTypeController.php(84): Controllers\CourseTypeController->syncSections()
+#5 [internal function]: Controllers\CourseTypeController->create()
+#6 C:\OSPanel\domains\msudle\app\core\Router.php(66): call_user_func_array()
+#7 C:\OSPanel\domains\msudle\app\routes\web.php(244): Core\Router->dispatch()
+#8 C:\OSPanel\domains\msudle\public\index.php(82): require_once('C:\\OSPanel\\doma...')
+#9 C:\OSPanel\domains\msudle\index.php(2): require_once('C:\\OSPanel\\doma...') in C:\OSPanel\domains\msudle\app\core\Database.php on line 28
